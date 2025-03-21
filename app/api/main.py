@@ -1,10 +1,7 @@
 import logging
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 from app.db import models
-from app.db.database import engine, get_db
-from .schemas import PostCreate, Post, UserCreate, UserOut
-from sqlalchemy.orm import Session
-from app.util import utils
+from app.db.database import engine
 from .routers.post import router as post_router
 
 models.Base.metadata.create_all(bind=engine)
