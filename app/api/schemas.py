@@ -24,6 +24,10 @@ class UserBase(BaseModel):
     email: EmailStr
 
 
+class UserOut(UserBase):
+    created_at: datetime
+
+
 class UserCreate(UserBase):
-    email: EmailStr
     password: str
+
