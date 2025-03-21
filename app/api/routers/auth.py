@@ -2,7 +2,7 @@ from fastapi import APIRouter,status, Depends, HTTPException
 from app.api.schemas import UserLogin
 from app.db import database
 from app.db import models
-from app.utils import utils
+from app.utils import security
 from sqlalchemy.orm import Session
 
 router = APIRouter(
@@ -19,7 +19,7 @@ def login(user_credentials: UserLogin, db: Session = Depends(database.get_db)):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Invalid credentials")
 
-    if not utils.verify_password(user_credentials.password, user.password):
+    if not security.verify_password(user_credentials.password, user.password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail="Invalid credentials")
 
