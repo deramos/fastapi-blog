@@ -6,7 +6,8 @@ from app.util import utils
 from sqlalchemy.orm import Session
 
 router = APIRouter(
-    prefix="/auth"
+    prefix="/auth",
+    tags=['Authentication']
 )
 
 
