@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post("/users", status_code=status.HTTP_201_CREATED, response_model=UserOut)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=UserOut)
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     hash_password = utils.hash(user.password)
     user.password = hash_password

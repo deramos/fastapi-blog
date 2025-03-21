@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.post("/posts", status_code=status.HTTP_201_CREATED, response_model=Post)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=Post)
 async def create_post(post: PostCreate, db: Session = Depends(get_db)):
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
@@ -19,13 +19,13 @@ async def create_post(post: PostCreate, db: Session = Depends(get_db)):
     return new_post
 
 
-@router.get("/posts", response_model=List[Post])
+@router.get("/", response_model=List[Post])
 async def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
     return posts
 
 
-@router.get("/posts/{post_id}", response_model=Post)
+@router.get("/{post_id}", response_model=Post)
 async def get_posts(post_id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id).first()
     if not post:
@@ -36,7 +36,7 @@ async def get_posts(post_id: int, db: Session = Depends(get_db)):
     return post
 
 
-@router.delete("/posts/{post_id}")
+@router.delete("/{post_id}")
 async def get_posts(post_id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id)
     if not post.first():
@@ -49,7 +49,7 @@ async def get_posts(post_id: int, db: Session = Depends(get_db)):
     return {"message": f"post {post_id} deleted successfully"}
 
 
-@router.put("/posts/{post_id}", response_model=Post)
+@router.put("/{post_id}", response_model=Post)
 async def get_posts(post_id: int, post: PostCreate, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == post_id)
     update_post = post_query.first()
