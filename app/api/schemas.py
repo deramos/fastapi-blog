@@ -1,8 +1,29 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime
 
 
-class Post(BaseModel):
+class PostBase(BaseModel):
     title: str
     content: str
     published: bool = False
+
+
+class PostCreate(PostBase):
+    pass
+
+
+class Post(PostBase):
+    title: str
+    content: str
+    published: bool
+    created_at: datetime
+
+
+class UserBase(BaseModel):
+    email: EmailStr
+
+
+class UserCreate(UserBase):
+    email: EmailStr
+    password: str

@@ -1,8 +1,9 @@
 import logging
+from typing import List
 from fastapi import FastAPI, Depends, HTTPException, status
 from app.db import models
-from app.db.database import engine, SessionLocal, get_db
-from .schemas import Post
+from app.db.database import engine, get_db
+from .schemas import PostCreate, Post, User
 from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
@@ -17,22 +18,22 @@ def home():
     return {"message": "Backend Roadmap"}
 
 
-@app.post("/posts")
-async def create_post(post: Post, db: Session = Depends(get_db)):
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=Post)
+async def create_post(post: PostCreate, db: Session = Depends(get_db)):
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {"data": new_post}
+    return new_post
 
 
-@app.get("/posts")
+@app.get("/posts", response_model=List[Post])
 async def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
-    return {"data": posts}
+    return posts
 
 
-@app.get("/posts/{post_id}")
+@app.get("/posts/{post_id}", response_model=Post)
 async def get_posts(post_id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == post_id).first()
     if not post:
@@ -40,7 +41,7 @@ async def get_posts(post_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"No post with id {post_id} found"
         )
-    return {"data": post}
+    return post
 
 
 @app.delete("/posts/{post_id}")
@@ -56,8 +57,8 @@ async def get_posts(post_id: int, db: Session = Depends(get_db)):
     return {"message": f"post {post_id} deleted successfully"}
 
 
-@app.put("/posts/{post_id}")
-async def get_posts(post_id: int, post: Post, db: Session = Depends(get_db)):
+@app.put("/posts/{post_id}", response_model=Post)
+async def get_posts(post_id: int, post: PostCreate, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == post_id)
     update_post = post_query.first()
 
@@ -70,4 +71,13 @@ async def get_posts(post_id: int, post: Post, db: Session = Depends(get_db)):
     post_query.update(post.model_dump(), synchronize_session=False)
     db.commit()
 
-    return {"message": "post updated successfully"}
+    return update_post
+
+
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=User)
+async def create_post(post: PostCreate, db: Session = Depends(get_db)):
+    new_post = models.Post(**post.model_dump())
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    return new_post
